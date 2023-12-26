@@ -1,11 +1,19 @@
-# Publish Secret Documents
+# Publishing Sensitive Configuration
 
-We implement the following Python scripts to convert YAML and Terraform manifests into a format suitable for [Zola static site generator](https://www.getzola.org/):
+We implement a couple of Python scripts that convert YAML and Terraform manifests in such a way that they are compatible with the [Zola Static Site Generator](https://www.getzola.org/). 
 
-### [redact.py](redact.py)
+Here are the scripts and information about what they do:
 
-This script is used to redact sensitive data. It selects only the config files that are referenced in `.md` files and applies some heuristics to find passwords and token values and replace them with `REDACTED`. This is best considered as just one of the layers in the Swiss cheese defence model.
+### 1. Redaction: [redact.py](redact.py)
+The purpose of the `redact.py` script is to redact sensitive data from our manifest files. 
 
-### [to_markdown.py](to_markdown.py)
+It guarantees that only files referenced in `.md` files will ever be included in the documentation. 
+Using a set of heuristics, it looks for sensitive information like passwords or tokens and replaces them with `REDACTED`. 
 
-This script is used to convert all files into Markdown. It enables syntax highlighting and adds a title to manifest files.
+It's advised to apply caution when using this method, at best as only a single layer as part of a Swiss cheese defense strategy.
+
+### 2. Conversion to Markdown: [to_markdown.py](to_markdown.py)
+
+The `to_markdown.py` script is used to convert all manifests into Markdown format. 
+
+It activates syntax highlighting for all code and adds a title to every manifest file, thus enhancing their readability and understandability.
