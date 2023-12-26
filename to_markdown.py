@@ -5,6 +5,7 @@ Convert plan files into Markdown files with a code block
 
 from glob import glob
 from os.path import isfile, join, splitext
+from textwrap import dedent
 
 import click
 
@@ -31,24 +32,27 @@ def redact(in_dir, out_dir):
         fullname = join(in_dir, filename)
         if isfile(fullname):
             with ProcessingMessage(filename):
-                _, extension = splitext(filename)
+                _, split2 = splitext(filename)
+                extension = split2.lower()[1:] if split2 and split2[0] == "." else ""
+
                 with open(fullname, "rt") as input_stream:
                     text = input_stream.read()
 
-                extension = (
-                    extension.lower()[1:] if extension and extension[0] == "." else ""
-                )
                 if extension == "md":
                     md_file = filename
                     out_text = text
                 else:
+                    lang = LANGUAGE_BY_EXTENSION.get(extension, extension)
                     md_file = filename + ".md"
-                    out_text = (
-                        "```"
-                        + LANGUAGE_BY_EXTENSION.get(extension, extension)
-                        + "\n"
-                        + text
-                        + "```"
+                    out_text = "\n".join(
+                        [
+                            "+++",
+                            "  title = '" + filename + "'",
+                            "+++",
+                            "```" + lang,
+                            text,
+                            "```",
+                        ]
                     )
 
                 create_and_write(out_dir, md_file, out_text)
