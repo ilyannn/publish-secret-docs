@@ -7,7 +7,7 @@ This is the format consumed by the Zola Static Site Generator.
 """
 
 from glob import glob
-from os.path import isfile, join, splitext, basename
+from os.path import basename, isfile, join, splitext
 from typing import Iterable
 
 import click
