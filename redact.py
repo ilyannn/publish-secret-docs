@@ -6,7 +6,7 @@ from collections import deque
 from glob import glob
 from os import makedirs
 from os.path import abspath, commonpath, dirname, join, relpath, splitext
-from typing import Optional
+from typing import Optional, Tuple
 from urllib.parse import urlparse
 
 import click
@@ -90,7 +90,7 @@ def is_a_secret(key, value):
     )
 
 
-def redact_text(text, file_ext) -> (str, int):
+def redact_text(text, file_ext) -> Tuple[str, int]:
     """
     :param text: The input text to be redacted. It can be a multiline string.
     :param file_ext: The file extension specifying the format of the input text (e.g., '.yaml', '.txt').
