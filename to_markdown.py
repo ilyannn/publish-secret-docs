@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 """
-Convert plan files into Markdown files with a code block
+Convert all files into Markdown format.
+
+Activates syntax highlighting for all code and add a preamble to every file, including Markdown files.
+This is the format consumed by the Zola Static Site Generator.
 """
 
 from glob import glob
