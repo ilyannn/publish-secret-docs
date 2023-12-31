@@ -32,7 +32,7 @@ def md_code(lang, text) -> Iterable[str]:
 @click.command()
 @click.argument("in_dir")
 @click.argument("out_dir")
-def redact(in_dir, out_dir):
+def to_markdown(in_dir, out_dir):
     """Convert all files into markdown files ready for display with Zola
 
     Markdown files get a preamble, while all other files are encoded with a ``` code block.
@@ -66,4 +66,4 @@ def redact(in_dir, out_dir):
 
 if __name__ == "__main__":
     # pylint: disable=no-value-for-parameter
-    redact()
+    to_markdown()
