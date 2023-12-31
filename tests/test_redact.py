@@ -45,7 +45,8 @@ class TestRedaction(unittest.TestCase):
             redact_text("safe_flag: true", ".yaml"), ("safe_flag: true", 0)
         )
         self.assertEqual(
-            redact_text("password: jasghDSGF2346", ".yaml"), ("password: REDACTED", 1) # gitleaks:allow
+            redact_text("password: jasghDSGF2346", ".yaml"),  # gitleaks:allow
+            ("password: REDACTED", 1),
         )
         self.assertEqual(
             redact_text("- --zone=hwer5uy6528hHJG", ".yaml"), ("- --zone=REDACTED", 1)
