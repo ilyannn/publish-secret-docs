@@ -14,6 +14,7 @@ It's advised to apply caution when using this method, at best as only a single l
 
 ### 2. Conversion to Markdown: [to_markdown.py](to_markdown.py)
 
-The `to_markdown.py` script is used to convert all manifests into Markdown format. 
+The `to_markdown.py` script is used to convert all manifests into Markdown format consumed by Zola. 
 
-It activates syntax highlighting for all code and adds a title to every manifest file, thus enhancing their readability and understandability.
+It activates syntax highlighting for all code and adds a preamble to every file,
+thus enhancing their readability and understandability.

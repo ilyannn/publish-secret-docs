@@ -4,8 +4,8 @@ Convert plan files into Markdown files with a code block
 """
 
 from glob import glob
-from os.path import isfile, join, splitext
-from textwrap import dedent
+from os.path import isfile, join, splitext, basename
+from typing import Iterable
 
 import click
 
@@ -18,12 +18,22 @@ LANGUAGE_BY_EXTENSION = {
 }
 
 
+def zola_preamble(title) -> Iterable[str]:
+    return "+++", f"  title = '{title}'", "+++"
+
+
+def md_code(lang, text) -> Iterable[str]:
+    return f"```{lang}", text, "```"
+
+
 @click.command()
 @click.argument("in_dir")
 @click.argument("out_dir")
 def redact(in_dir, out_dir):
-    """Convert all files into markdown files
+    """Convert all files into markdown files ready for display with Zola 
 
+    Markdown files get a preamble, while all other files are encoded with a ``` code block.
+    
     :param in_dir: Input directory path (relative to current working directory)
     :param out_dir: Output directory path (will be created if it does not exist)
     """
@@ -33,28 +43,21 @@ def redact(in_dir, out_dir):
         if isfile(fullname):
             with ProcessingMessage(filename):
                 _, split2 = splitext(filename)
-                extension = split2.lower()[1:] if split2 and split2[0] == "." else ""
+                ext = split2.lower()[1:] if split2 and split2[0] == "." else ""
 
                 with open(fullname, "rt") as input_stream:
                     text = input_stream.read()
 
-                if extension == "md":
+                if ext == "md":
                     md_file = filename
-                    out_text = text
+                    header, *out_lines = text.splitlines()
+                    title = header.lstrip("#").strip()
                 else:
-                    lang = LANGUAGE_BY_EXTENSION.get(extension, extension)
                     md_file = filename + ".md"
-                    out_text = "\n".join(
-                        [
-                            "+++",
-                            "  title = '" + filename + "'",
-                            "+++",
-                            "```" + lang,
-                            text,
-                            "```",
-                        ]
-                    )
+                    out_lines = md_code(LANGUAGE_BY_EXTENSION.get(ext, ext), text)
+                    title = basename(filename)
 
+                out_text = "\n".join((*zola_preamble(title), *out_lines))
                 create_and_write(out_dir, md_file, out_text)
 
 
