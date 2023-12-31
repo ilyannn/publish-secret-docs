@@ -33,10 +33,10 @@ def md_code(lang, text) -> Iterable[str]:
 @click.argument("in_dir")
 @click.argument("out_dir")
 def redact(in_dir, out_dir):
-    """Convert all files into markdown files ready for display with Zola 
+    """Convert all files into markdown files ready for display with Zola
 
     Markdown files get a preamble, while all other files are encoded with a ``` code block.
-    
+
     :param in_dir: Input directory path (relative to current working directory)
     :param out_dir: Output directory path (will be created if it does not exist)
     """
