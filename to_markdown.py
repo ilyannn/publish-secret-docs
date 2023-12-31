@@ -65,4 +65,5 @@ def redact(in_dir, out_dir):
 
 
 if __name__ == "__main__":
+    # pylint: disable=no-value-for-parameter
     redact()
