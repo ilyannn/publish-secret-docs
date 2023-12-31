@@ -1,4 +1,6 @@
 # Publishing Sensitive Configuration
+[![Python Unit Tests](https://github.com/ilyannn/publish-secret-docs/actions/workflows/unittests.yaml/badge.svg)](https://github.com/ilyannn/publish-secret-docs/actions/workflows/unittests.yaml)  [![Lint Code Base](https://github.com/ilyannn/publish-secret-docs/actions/workflows/super-linter.yml/badge.svg)](https://github.com/ilyannn/publish-secret-docs/actions/workflows/super-linter.yml) [![CodeQL](https://github.com/ilyannn/publish-secret-docs/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/ilyannn/publish-secret-docs/actions/workflows/github-code-scanning/codeql)
+
 
 We implement a couple of Python scripts that convert YAML and Terraform manifests in such a way that they are compatible with the [Zola Static Site Generator](https://www.getzola.org/).
 
