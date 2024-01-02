@@ -5,7 +5,7 @@ Redact the sensitive info from the YAML and TF config files.
 from collections import deque
 from glob import glob
 from os import makedirs
-from os.path import abspath, commonpath, dirname, join, relpath, splitext
+from os.path import abspath, commonpath, dirname, join, relpath, splitext, isfile
 from typing import Optional, Tuple
 from urllib.parse import urlparse
 
@@ -205,14 +205,16 @@ def redact(in_dir, out_dir):
     for value_file in sorted(referenced_files):
         try:
             with ProcessingMessage(value_file):
-                with open(join(in_dir, value_file), "rt") as input_stream:
-                    text = input_stream.read()
-                out_text, found_secrets = redact_text(text, splitext(value_file)[1])
-                click.echo(
-                    f"redacted {click.style(plural('secret', found_secrets), reverse=True)}, ",
-                    nl=False,
-                )
-                create_and_write(out_dir, value_file, out_text)
+                fullname = join(in_dir, value_file)
+                if isfile(fullname):
+                    with open(fullname, "rt") as input_stream:
+                        text = input_stream.read()
+                    out_text, found_secrets = redact_text(text, splitext(value_file)[1])
+                    click.echo(
+                        f"redacted {click.style(plural('secret', found_secrets), reverse=True)}, ",
+                        nl=False,
+                    )
+                    create_and_write(out_dir, value_file, out_text)
         except FileNotFoundError:
             pass
 
