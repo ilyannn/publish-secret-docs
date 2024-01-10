@@ -5,7 +5,7 @@ Redact the sensitive info from the YAML and TF config files.
 from collections import deque
 from glob import glob
 from os import makedirs
-from os.path import abspath, commonpath, dirname, join, relpath, splitext, isfile
+from os.path import abspath, commonpath, dirname, isfile, join, relpath, splitext
 from typing import Optional, Tuple
 from urllib.parse import urlparse
 
@@ -22,10 +22,6 @@ plural = engine().no
 tokenizer = tiktoken.encoding_for_model("gpt-4")
 
 
-def token_length(value):
-    return len(tokenizer.encode(value))
-
-
 def as_file_destination(dest: str, source: str, base: str) -> Optional[str]:
     """
     Compute a destination path to a file, relative to a base directory.
@@ -33,7 +29,7 @@ def as_file_destination(dest: str, source: str, base: str) -> Optional[str]:
     :param dest: The destination path to convert, e.g. '../some/path/to/file'
     :param source: The source path to derive the base directory from, e.g. '/home/folder'
     :param base: The base directory for all the directories, e.g. '/home'
-    :return: The converted file path relative to `base`, or None if the file is outside the base directory.
+    :return: Converted file path relative to `base`; None if the file is outside the base directory
     """
     try:
         url = urlparse(dest)
@@ -79,8 +75,8 @@ def is_a_secret(key, value):
     - a sequence with a digit
     - of length at least 10
     - which is either
-       - hinted with the key containing one of two strings
-       - or is part of the value separated by the whitespace which looks random for ChatGPT tokenizer
+       - hinted with the key containing one of two strings OR
+       - is part of the value separated by the whitespace which looks random for ChatGPT tokenizer
     """
     key = key.lower()
     return (
@@ -93,11 +89,13 @@ def is_a_secret(key, value):
 def redact_text(text, file_ext) -> Tuple[str, int]:
     """
     :param text: The input text to be redacted. It can be a multiline string.
-    :param file_ext: The file extension specifying the format of the input text (e.g., '.yaml', '.txt').
+    :param file_ext: The file extension for the format of the input text (e.g., '.yaml', '.txt').
     :return: A tuple containing the redacted text (str) and the count of redacted lines (int).
 
-    This method iterates through the key/value pairs (according to the rules specific for the given file extension) of
-    the input text and redacts anything that looks like sensitive information found in the values with "REDACTED".
+    This method iterates through the key/value pairs (according to the rules specific for the given
+    file extension) of the input text and redacts anything that looks like sensitive information
+    found in the values with "REDACTED".
+
     The resulting text is returned along with the count of redacted values.
     """
     count_redacted = 0
@@ -142,11 +140,11 @@ def create_and_write(out_dir, filename, text):
     """
     output_file = join(out_dir, filename)
     makedirs(dirname(output_file), exist_ok=True)
-    with open(output_file, "wt") as output_stream:
+    with open(output_file, "wt", encoding="utf-8") as output_stream:
         output_stream.write(text)
 
 
-class ProcessingMessage(object):
+class ProcessingMessage:
     """A class for producing nicely formatted "processing xxx... done" messages."""
 
     def __init__(self, file_name):
@@ -160,9 +158,9 @@ class ProcessingMessage(object):
         click.echo(message, nl=False)
         return self
 
-    def __exit__(self, type, value, traceback):
+    def __exit__(self, exception_type, value, traceback):
         message = (
-            click.style("error", fg="red") if type else click.style("done", "green")
+            click.style("error", fg="red") if exception_type else click.style("done", "green")
         )
         click.echo(message)
 
@@ -184,7 +182,7 @@ def redact(in_dir, out_dir):
     for md_file in glob("**/*.md", recursive=True, root_dir=in_dir):
         with ProcessingMessage(md_file):
             found_links = 0
-            with open(join(in_dir, md_file), "rt") as input_stream:
+            with open(join(in_dir, md_file), "rt", encoding="utf-8") as input_stream:
                 text = input_stream.read()
             document = markdown.parse(text)
             queue = deque([document])
@@ -207,7 +205,7 @@ def redact(in_dir, out_dir):
             with ProcessingMessage(value_file):
                 fullname = join(in_dir, value_file)
                 if isfile(fullname):
-                    with open(fullname, "rt") as input_stream:
+                    with open(fullname, "rt", encoding="utf-8") as input_stream:
                         text = input_stream.read()
                     out_text, found_secrets = redact_text(text, splitext(value_file)[1])
                     click.echo(

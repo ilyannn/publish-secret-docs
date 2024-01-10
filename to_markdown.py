@@ -2,7 +2,7 @@
 """
 Convert all files into Markdown format.
 
-Activates syntax highlighting for all code and add a preamble to every file, including Markdown files.
+Activates syntax highlighting for all code and adds a preamble to every file, including Markdown.
 This is the format consumed by the Zola Static Site Generator.
 """
 
@@ -11,7 +11,6 @@ from os.path import basename, isfile, join, splitext
 from typing import Iterable
 
 import click
-
 from redact import ProcessingMessage, create_and_write
 
 LANGUAGE_BY_EXTENSION = {
@@ -22,10 +21,12 @@ LANGUAGE_BY_EXTENSION = {
 
 
 def zola_preamble(title) -> Iterable[str]:
+    """Adds a preamble of the form necessary for Zola"""
     return "+++", f"  title = '{title}'", "+++"
 
 
 def md_code(lang, text) -> Iterable[str]:
+    """Outputs a code block as Markdown"""
     return f"```{lang}", text, "```"
 
 
@@ -48,7 +49,7 @@ def to_markdown(in_dir, out_dir):
                 _, split2 = splitext(filename)
                 ext = split2.lower()[1:] if split2 and split2[0] == "." else ""
 
-                with open(fullname, "rt") as input_stream:
+                with open(fullname, "rt", encoding="utf-8") as input_stream:
                     text = input_stream.read()
 
                 if ext == "md":
